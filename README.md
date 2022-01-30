@@ -8,6 +8,7 @@ Do NOT use this in production. This was just a few commands I whipped together t
 - Generates certificates with long lifetimes
 - Doesn't support rotation
 - Doesn't support any customization of the domain's certificate
+- Generates the endpoint's key pair locally instead of accepting a CSR
 
 ## 0. Install Prerequisites
 
@@ -33,29 +34,22 @@ ykman piv access change-pin
 ykman piv access change-puk
 ```
 
-Generate the root CA on your YubiKey:
+Generate the root CA, and import it to your YubiKey:
 
 ```bash
-# Create the public/private key
-ykman piv keys generate -a RSA2048 --pin-policy ALWAYS --touch-policy CACHED 9c slot_9c.pem
-# Create the certificate, with a random expiry to prevent exploitation of any clock-related RNG bugs
-ykman piv certificates generate -s "CN=YubiKey" -d $(( ( RANDOM % 1000 )  + 365*50 )) -a SHA512 9c slot_9c-crt.pem
-# Begin the serial at 00
-echo 00 > slot_9c-crt.srl
+# Warning, this overwrites slot 9c on your YubiKey!
+./root.sh
 ```
 
-Import `slot_9c-crt.pem` to your trusted root CA store on each device. For macOS:
+Add this root CA to the trusted root CA store on each device. For macOS:
 
 ```bash
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain slot_9c-crt.pem
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain root/crt.pem
 ```
-
-Both `slot_9c-crt.pem` and `slot_9c-crt.srl` must be present for the next steps.
 
 ## 2. Generate the certificates
 
-Simply run `./script.sh your_domain`, e.g. `./script.sh raspberrypi.localdomain`.
-
-Provide `your_domain/crt.pem` and `your_domain/key.pem` to the destination server.
-
-Finally, delete `your_domain/key.pem`.
+1. Simply run `./endpoint.sh your_domain`, e.g. `./endpoint.sh raspberrypi.localdomain`.
+2. When the YubiKey starts flashing, touch it.
+3. Provide `your_domain/crt.pem` and `your_domain/key.pem` to the destination server.
+4. Finally, delete `your_domain/key.pem`.
