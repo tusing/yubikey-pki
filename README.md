@@ -44,8 +44,13 @@ ykman piv certificates generate -s "CN=YubiKey" -d $(( ( RANDOM % 1000 )  + 365*
 echo 00 > slot_9c-crt.srl
 ```
 
-- Import `slot_9c-crt.pem` to your trusted root CA store on each device.
-- Both `slot_9c-crt.pem` and `slot_9c-crt.srl` must be present.
+Import `slot_9c-crt.pem` to your trusted root CA store on each device. For macOS:
+
+```bash
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain slot_9c-crt.pem
+```
+
+Both `slot_9c-crt.pem` and `slot_9c-crt.srl` must be present for the next steps.
 
 ## 2. Generate the certificates
 
