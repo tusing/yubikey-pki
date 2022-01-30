@@ -66,3 +66,5 @@ To add the cert to Firefox, go to `Settings -> Security -> Certificates -> View 
 1. Input your YubiKey PIV PIN when prompted. Touch the disk when it starts flashing.
 2. Provide `example.com/foo/crt.pem` and `example.com/foo/key.pem` to your endpoint.
 3. Delete `example.com/foo/key.pem`.
+
+This creates a certificate for `foo.example.com` with a lifetime of 820 days in `example.com/foo`.
