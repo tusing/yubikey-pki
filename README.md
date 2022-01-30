@@ -1,15 +1,26 @@
 # yubikey_pki
 
-This quick and dirty script uses your YubiKey as a CA to generate TLS certificates for hosts on my local (home network) domains.
+This quick and dirty script uses your YubiKey as a CA to sign TLS certificates.
 
-Do NOT use this in production. This was just a few commands I whipped together to *marginally* improve the security of accessing servers over my local network. Namely, this flow
+Don't use this in production.
 
-- Has no intermediate CA
+The benefits are as follows:
+
+- A physical touch is required to mint a certificate for each endpoint
+- Quickly and easily mint certificates for all local servers
+
+The downsides are:
+
+- There is no intermediate CA
 - Doesn't support rotation
-- Doesn't support any customization of the domain's certificate
+- Doesn't support any customization
 - Generates the endpoint's key pair locally instead of accepting a CSR
 
+This project is purely for fun.
+
 ## 0. Install Prerequisites
+
+macOS is required.
 
 ```bash
 brew install openssl@1.1 homebrew/cask/opensc libp11 ykman
@@ -33,22 +44,25 @@ ykman piv access change-pin
 ykman piv access change-puk
 ```
 
-Generate the root CA, import it to your YubiKey:
+Generate the root CA for the root of your choice, and import it to your YubiKey:
 
 ```bash
 # Warning, this overwrites slot 9c on your YubiKey!
-./root.sh
+# To create a root CA for example.com: 
+./root.sh example.com
 ```
 
-Add this root CA to the trusted root CA store on each device. For macOS:
+This script will create a CA name-restricted to example.com, with a lifetime of 20 years, import it to your YubiKey, delete the private key, and add the certificate to macOS Keychain for compatibility with Safari.
 
-```bash
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain root/crt.pem
-```
+To add the cert to Firefox, go to `Settings -> Security -> Certificates -> View Certificates`, and add `example.com/crt.pem` to the `Authorities` section.
 
 ## 2. Generate the certificates
 
-1. Simply run `./endpoint.sh your_domain`, e.g. `./endpoint.sh raspberrypi.localdomain`.
-2. When the YubiKey starts flashing, touch it.
-3. Provide `your_domain/crt.pem` and `your_domain/key.pem` to the destination server.
-4. Finally, delete `your_domain/key.pem`.
+```bash
+# To create a certificate for foo.example.com:
+./endpoint.sh foo example.com
+```
+
+1. Input your YubiKey PIV PIN when prompted. Touch the disk when it starts flashing.
+2. Provide `example.com/foo/crt.pem` and `example.com/foo/key.pem` to your endpoint.
+3. Delete `example.com/foo/key.pem`.
