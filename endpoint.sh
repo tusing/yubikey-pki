@@ -39,6 +39,8 @@ EOF
 # Sign the CSR and output the certificate
 openssl << EOF
 engine dynamic -pre SO_PATH:/opt/homebrew/Cellar/libp11/0.4.11/lib/engines-1.1/pkcs11.dylib -pre ID:pkcs11 -pre NO_VCHECK:1 -pre LIST_ADD:1 -pre LOAD -pre MODULE_PATH:/Library/OpenSC/lib/opensc-pkcs11.so -pre VERBOSE
-x509 -engine pkcs11 -CAkeyform engine -sha512 -CAkey slot_0-id_2 -CA root/crt.pem -req -passin pass:$pin -in $host/csr.pem -extfile $host/crt.conf -days $(( ( RANDOM % 1000 )  + 365*50 )) -out $host/crt.pem
+x509 -engine pkcs11 -CAkeyform engine -sha256 -CAkey slot_0-id_2 -CA root/crt.pem -req -passin pass:$pin -in $host/csr.pem -extfile $host/crt.conf -days 820 -out $host/crt.pem
 EOF
 openssl x509 -text < $host/crt.pem
+
+echo "WARNING: DO NOT forget to delete the private key after exporting"

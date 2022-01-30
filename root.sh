@@ -24,10 +24,12 @@ permitted;URI.1=.yubico.com
 permitted;IP.0=0.0.0.0/255.255.255.255
 permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 EOF
-openssl req -new -sha256 -x509 -set_serial 1 -days $(( ( RANDOM % 1000 )  + 365*50 )) -config root/crt.conf -key root/key.pem -out root/crt.pem
+openssl req -new -sha256 -x509 -set_serial 1 -days 7300 -config root/crt.conf -key root/key.pem -out root/crt.pem
 echo 01 > root/crt.srl
 
 echo WARNING: Slot 9c on your YubiKey PIV application will be overwritten!
 yubico-piv-tool -k $key -a import-key -s 9c --pin-policy=always --touch-policy=always < root/key.pem
 yubico-piv-tool -k $key -a import-certificate -s 9c < root/crt.pem
 rm root/key.pem
+openssl x509 -in root/crt.pem -text -noout
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain root/crt.pem

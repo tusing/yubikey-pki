@@ -5,7 +5,6 @@ This quick and dirty script uses your YubiKey as a CA to generate TLS certificat
 Do NOT use this in production. This was just a few commands I whipped together to *marginally* improve the security of accessing servers over my local network. Namely, this flow
 
 - Has no intermediate CA
-- Generates certificates with long lifetimes
 - Doesn't support rotation
 - Doesn't support any customization of the domain's certificate
 - Generates the endpoint's key pair locally instead of accepting a CSR
@@ -34,7 +33,7 @@ ykman piv access change-pin
 ykman piv access change-puk
 ```
 
-Generate the root CA, and import it to your YubiKey:
+Generate the root CA, import it to your YubiKey:
 
 ```bash
 # Warning, this overwrites slot 9c on your YubiKey!
