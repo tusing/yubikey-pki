@@ -1,19 +1,20 @@
-#!/bin/zsh
+#!/usr/bin/env bash
+set -eou pipefail
 
-if [ -z "$1" ]; then
+if [ $# -lt 1 ]; then
 	echo "Create a root CA in your YubiKey, name-constrained to the provided domain."
-	echo "Usage: $0 rootCaDomain";
+	echo "Usage: $0 rootCaDomain"
 	echo "Example 1: $0 localdomain"
 	echo "Example 2: $0 example.com"
 	exit
 else
-	echo "Creating a root in YubiKey for $1...";
+	echo "Creating a root in YubiKey for $1..."
 fi
 rootCaDomain=$1
 
 mkdir -p $rootCaDomain
 openssl genrsa -out $rootCaDomain/key.pem 2048
-cat>$rootCaDomain/crt.conf<<EOF
+cat >$rootCaDomain/crt.conf <<EOF
 [ req ]
 x509_extensions = v3_ca
 distinguished_name = req_distinguished_name
@@ -37,11 +38,11 @@ permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 EOF
 
 openssl req -new -sha256 -x509 -set_serial 1 -days 7300 -config $rootCaDomain/crt.conf -key $rootCaDomain/key.pem -out $rootCaDomain/crt.pem
-echo 01 > $rootCaDomain/crt.srl
+echo 01 >$rootCaDomain/crt.srl
 
 echo WARNING: Slot 9c on your YubiKey PIV application will be overwritten!
-yubico-piv-tool -k $key -a import-key -s 9c --pin-policy=always --touch-policy=always < $rootCaDomain/key.pem
-yubico-piv-tool -k $key -a import-certificate -s 9c < $rootCaDomain/crt.pem
+yubico-piv-tool -k $key -a import-key -s 9c --pin-policy=always --touch-policy=always <$rootCaDomain/key.pem
+yubico-piv-tool -k $key -a import-certificate -s 9c <$rootCaDomain/crt.pem
 rm $rootCaDomain/key.pem
 openssl x509 -in $rootCaDomain/crt.pem -text -noout
 
