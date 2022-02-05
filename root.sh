@@ -37,14 +37,18 @@ permitted;IP.0=0.0.0.0/255.255.255.255
 permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 EOF
 
-openssl req -new -sha256 -x509 -set_serial 1 -days 7300 -config $rootCaDomain/crt.conf -key $rootCaDomain/key.pem -out $rootCaDomain/crt.pem
+keyOut=$rootCaDomain/key.pem
+crtOut=$rootCaDomain/crt.pem
+confOut=$rootCaDomain/crt.conf
+
+openssl req -new -sha256 -x509 -set_serial 1 -days 7300 -config $confOut -key $keyOut -out $crtOut
 echo 01 >$rootCaDomain/crt.srl
 
 echo WARNING: Slot 9c on your YubiKey PIV application will be overwritten!
-yubico-piv-tool -k $key -a import-key -s 9c --pin-policy=always --touch-policy=always <$rootCaDomain/key.pem
-yubico-piv-tool -k $key -a import-certificate -s 9c <$rootCaDomain/crt.pem
-rm $rootCaDomain/key.pem
-openssl x509 -in $rootCaDomain/crt.pem -text -noout
+yubico-piv-tool -k $keyOut -a import-key -s 9c --pin-policy=always --touch-policy=always <$keyOut
+yubico-piv-tool -k $keyOut -a import-certificate -s 9c <$crtOut
+rm $keyOut
+openssl x509 -in $crtOut -text -noout
 
-echo "Adding the root CA to your trust store:"
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $rootCaDomain/crt.pem
+echo "Add the root CA to your trust store. On Mac, run:"
+echo sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $rootCaDomain/crt.pem

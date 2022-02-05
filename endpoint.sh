@@ -16,16 +16,12 @@ host=$endpoint.$rootCaDomain
 outDir=$rootCaDomain/$endpoint
 
 echo "Creating a key pair for $host"
-stat $rootCaDomain || {
+stat $rootCaDomain &>/dev/null || {
 	echo "Could not find directory for root CA."
 	exit 1
 }
-stat $outDir || echo "Warning! $outDir already exists."
-
-mkdir $outDir
-
-# Use the homebrew-provided openssl
-alias openssl=/opt/homebrew/opt/openssl@1.1/bin/openssl
+stat $outDir &>/dev/null || echo "Warning! $outDir already exists."
+mkdir -p $outDir
 
 # Generate the target host's key pair
 openssl genrsa -out $outDir/key.pem 2048
@@ -51,8 +47,8 @@ EOF
 
 # Sign the CSR and output the certificate
 openssl <<EOF
-engine dynamic -pre SO_PATH:/opt/homebrew/Cellar/libp11/0.4.11/lib/engines-1.1/pkcs11.dylib -pre ID:pkcs11 -pre NO_VCHECK:1 -pre LIST_ADD:1 -pre LOAD -pre MODULE_PATH:/Library/OpenSC/lib/opensc-pkcs11.so -pre VERBOSE
-x509 -engine pkcs11 -CAkeyform engine -sha256 -CAkey slot_0-id_2 -CA $rootCaDomain/crt.pem -req -passin pass:$pin -in $outDir/csr.pem -extfile $outDir/crt.conf -days 820 -out $outDir/crt.pem
+engine dynamic -pre SO_PATH:$SO_PATH -pre ID:pkcs11 -pre NO_VCHECK:1 -pre LIST_ADD:1 -pre LOAD -pre MODULE_PATH:$MODULE_PATH -pre VERBOSE
+x509 -engine pkcs11 -CAkeyform engine -sha256 -CAkey slot_0-id_2 -CA $rootCaDomain/crt.pem -req -in $outDir/csr.pem -extfile $outDir/crt.conf -days 820 -out $outDir/crt.pem
 EOF
 
 openssl x509 -text <$outDir/crt.pem
