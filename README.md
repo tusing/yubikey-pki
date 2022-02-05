@@ -33,6 +33,10 @@ The following dependencies are required:
 recommended.** If you're using Nix, dependencies will be autoloaded
 just for this project in a manner that does not pollute your environment.
 
+```bash
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
 ### Using Brew
 
 ```bash
@@ -45,7 +49,7 @@ Set up the YubiKey PIV application on your YubiKey.
 First, change the default PIN, PUK, and Management Key, and save the values somewhere:
 
 ```bash
-nix-shell # (if you're using nix)
+nix-shell # (if you're using Nix)
 ykman piv access change-management-key
 ykman piv access change-pin
 ykman piv access change-puk
