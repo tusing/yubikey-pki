@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -eou pipefail
 # ARG_POSITIONAL_SINGLE([root_domain],[domain for the root CA],[])
+# ARG_OPTIONAL_BOOLEAN([keep-private-key],[],[keep the private key around after importing it to the YubiKey])
 # ARG_HELP([Generates an X.509 Root CA keypair for the specified domain and loads it into your YubiKey.])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -24,11 +25,13 @@ begins_with_short_option() {
 # THE DEFAULTS INITIALIZATION - POSITIONALS
 _positionals=()
 # THE DEFAULTS INITIALIZATION - OPTIONALS
+_arg_keep_private_key="off"
 
 print_help() {
 	printf '%s\n' "Generates an X.509 Root CA keypair for the specified domain and loads it into your YubiKey."
-	printf 'Usage: %s [-h|--help] <root_domain>\n' "$0"
+	printf 'Usage: %s [--(no-)keep-private-key] [-h|--help] <root_domain>\n' "$0"
 	printf '\t%s\n' "<root_domain>: domain for the root CA"
+	printf '\t%s\n' "--keep-private-key, --no-keep-private-key: keep the private key around after importing it to the YubiKey (off by default)"
 	printf '\t%s\n' "-h, --help: Prints help"
 }
 
@@ -37,6 +40,10 @@ parse_commandline() {
 	while test $# -gt 0; do
 		_key="$1"
 		case "$_key" in
+		--no-keep-private-key | --keep-private-key)
+			_arg_keep_private_key="on"
+			test "${1:0:5}" = "--no-" && _arg_keep_private_key="off"
+			;;
 		-h | --help)
 			print_help
 			exit 0
@@ -117,7 +124,11 @@ echo 01 >$_arg_root_domain/crt.srl
 echo WARNING: Slot 9c on your YubiKey PIV application will be overwritten!
 yubico-piv-tool -k $keyOut -a import-key -s 9c --pin-policy=always --touch-policy=always <$keyOut
 yubico-piv-tool -k $keyOut -a import-certificate -s 9c <$crtOut
-rm $keyOut
+
+if [ $_arg_keep_private_key == "off" ]; then
+	rm $keyOut
+fi
+
 openssl x509 -in $crtOut -text -noout
 
 echo "Add the root CA to your trust store. On Mac, run:"
