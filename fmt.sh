@@ -4,6 +4,12 @@ set -eou pipefail
 # Run me with
 # "nix-shell fmt.nix --run :"
 
-argbash -i root.sh
-shfmt -w .
-nixpkgs-fmt .
+for sh in endpoint.sh root.sh; do
+	argbash -i $sh >/dev/null 2>&1
+done
+
+for sh in *.sh; do
+	shfmt -w $sh >/dev/null 2>&1
+done
+
+nixpkgs-fmt . >/dev/null 2>&1
