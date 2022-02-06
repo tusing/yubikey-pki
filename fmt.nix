@@ -9,8 +9,6 @@ pkgs.mkShell {
     shfmt
   ];
   shellHook = ''
-    export ROOT_USAGE=$(./root.sh --help)
-    export ENDPOINT_USAGE=$(./endpoint.sh --help)
     ./fmt.sh
   '';
 }

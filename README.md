@@ -61,7 +61,7 @@ ykman piv access change-puk
 ## 2. Create a Root CA
 
 ```
-Generate an X.509 Root CA keypair for the specified domain and loads it into your YubiKey.
+Generate an X.509 Root CA keypair for the specified domain and load it into your YubiKey.
 Usage: ./root.sh [--(no-)keep-private-key] [--ttl <arg>] [-h|--help] <root_domain>
 	<root_domain>: domain for the root CA
 	--keep-private-key, --no-keep-private-key: keep the private key around after importing it to the YubiKey (off by default)
@@ -93,7 +93,7 @@ and add `example.com/crt.pem` to the `Authorities` section.
 ## 3. Generate endpoint subdomain certificates
 
 ```
-Generate an X.509 cert pair for the specified endpoint and loads it into your YubiKey.
+Generate an X.509 cert pair for the specified endpoint and load it into your YubiKey.
 Usage: ./endpoint.sh [--ttl <arg>] [-h|--help] <endpoint_domain> <root_domain>
 	<endpoint_domain>: subdomain to generate the certs for (e.g. 'foo' for 'foo.example.com')
 	<root_domain>: domain of the root CA (e.g. 'example.com' for 'foo.example.com')
