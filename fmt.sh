@@ -12,4 +12,6 @@ for sh in *.sh; do
 	shfmt -w $sh >/dev/null 2>&1
 done
 
+gomplate -f fmt.md -o README.md
+
 nixpkgs-fmt . >/dev/null 2>&1
