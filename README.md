@@ -2,12 +2,16 @@
 
 This quick and dirty script uses your YubiKey as a CA to sign TLS certificates.
 
-Don't use this in production.
+The generated CA and TLS certificates are designed to adhere to Apple's guidelines
+so as to avoid the "certificate is not standards compliant" error when you use a
+regular old self-signed certificate.
+
+Don't use this in production!
 
 The benefits are as follows:
 
 - A physical touch is required to mint a certificate for each endpoint
-- Quickly and easily mint certificates for all local servers
+- Quickly and easily mint certificates
 
 The downsides are:
 
