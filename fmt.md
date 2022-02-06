@@ -1,6 +1,6 @@
-# yubikey_pki
+# yubikey-pki
 
-This quick and dirty script uses your YubiKey as a CA to sign TLS certificates.
+This script uses your YubiKey as a CA to sign TLS certificates.
 
 The generated CA and TLS certificates are designed to adhere to Apple's guidelines
 so as to avoid the "certificate is not standards compliant" error when you use a
