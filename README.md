@@ -60,6 +60,8 @@ ykman piv access change-puk
 
 ## 2. Create a Root CA
 
+This will **overwrite slot 9c** on your YubiKey's PIV application.
+
 ```
 Generate an X.509 Root CA keypair for the specified domain and load it into your YubiKey.
 Usage: ./root.sh [--(no-)keep-private-key] [--ttl <arg>] [-h|--help] <root_domain>
@@ -69,10 +71,7 @@ Usage: ./root.sh [--(no-)keep-private-key] [--ttl <arg>] [-h|--help] <root_domai
 	-h, --help: Prints help
 ```
 
-Generate the root CA for the root of your choice, and import it to your YubiKey.
-This will **overwrite slot 9c** on your YubiKey's PIV application.
-
-To create a root CA for `example.com`:
+To create a root CA for `example.com` and load it into your YubiKey:
 
 ```bash
 # Using Nix:
