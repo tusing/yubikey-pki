@@ -23,6 +23,7 @@ The following dependencies are required:
 - opensc
 - libp11
 - ykman
+- yubico-piv-tool
 
 ### Using Nix
 
@@ -37,7 +38,7 @@ sh <(curl -L https://nixos.org/nix/install) --daemon
 ### Using Brew
 
 ```bash
-brew install openssl@1.1 homebrew/cask/opensc libp11 ykman
+brew install openssl@1.1 homebrew/cask/opensc libp11 ykman yubico-piv-tool
 ```
 
 ## 1. Set up your YubiKey
