@@ -31,9 +31,7 @@ The following dependencies are required:
 recommended.** If you're using Nix, dependencies will be autoloaded
 just for this project in a manner that does not pollute your environment.
 
-```bash
-sh <(curl -L https://nixos.org/nix/install) --daemon
-```
+[**Install Nix** (recommended)](https://nixos.org/download.html)
 
 ### Using Brew
 
