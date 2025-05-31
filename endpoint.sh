@@ -100,7 +100,10 @@ if [ $_arg_ttl -gt 825 ]; then
 fi
 
 # Specify host
-host=$_arg_endpoint_domain.$_arg_root_domain
+# Remove trailing dots from endpoint domain and leading dots from root domain to prevent double dots
+endpoint_clean=$(echo "$_arg_endpoint_domain" | sed 's/\.$//')
+root_clean=$(echo "$_arg_root_domain" | sed 's/^\.//')
+host=$endpoint_clean.$root_clean
 
 # Specify paths
 outDir=$_arg_root_domain/$_arg_endpoint_domain

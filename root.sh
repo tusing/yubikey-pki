@@ -102,6 +102,10 @@ assign_positional_args 1 "${_positionals[@]}"
 
 mkdir -p $_arg_root_domain
 openssl genrsa -out $_arg_root_domain/key.pem 2048
+
+# Clean root domain to prevent double dots in name constraints
+root_domain_clean=$(echo "$_arg_root_domain" | sed 's/^\.//')
+
 cat >$_arg_root_domain/crt.conf <<EOF
 [ req ]
 x509_extensions = v3_ca
@@ -115,12 +119,12 @@ basicConstraints=critical,CA:true,pathlen:1
 keyUsage=critical,keyCertSign,cRLSign
 nameConstraints=critical,@nc
 [ nc ]
-permitted;otherName=1.3.6.1.5.5.7.8.7;IA5:$_arg_root_domain
-permitted;email.0=$_arg_root_domain
-permitted;email.1=.$_arg_root_domain
-permitted;DNS=$_arg_root_domain
-permitted;URI.0=$_arg_root_domain
-permitted;URI.1=.$_arg_root_domain
+permitted;otherName=1.3.6.1.5.5.7.8.7;IA5:$root_domain_clean
+permitted;email.0=$root_domain_clean
+permitted;email.1=.$root_domain_clean
+permitted;DNS=$root_domain_clean
+permitted;URI.0=$root_domain_clean
+permitted;URI.1=.$root_domain_clean
 permitted;IP.0=0.0.0.0/255.255.255.255
 permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 EOF
