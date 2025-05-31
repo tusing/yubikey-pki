@@ -82,7 +82,7 @@ compatibility with Safari.
 To add the cert to Firefox, go to `Settings -> Security -> Certificates -> View Certificates`,
 and add `example.com/crt.pem` to the `Authorities` section.
 
-## 3. Generate endpoint subdomain certificates
+## 3. Generate endpoint domain certificates
 
 ```
 Generate an X.509 cert pair for the specified endpoint, and sign the CSR with your YubiKey.
@@ -93,21 +93,25 @@ Usage: ./endpoint.sh [--ttl <arg>] [-h|--help] <endpoint_domain> <root_domain>
 	-h, --help: Prints help
 ```
 
-To generate a public/private key pair for `foo.example.com`:
+To generate a public/private key pair for `foo.local`:
 
 ```bash
 # Using Nix:
-nix-shell --run "./endpoint.sh foo example.com"
+nix-shell --run "./endpoint.sh foo local"
 
 # Otherwise:
 # (you might have to adjust the lib paths)
 export SO_PATH="/opt/homebrew/Cellar/libp11/0.4.11/lib/engines-1.1/pkcs11.dylib"
 export MODULE_PATH="Library/OpenSC/lib/opensc-pkcs11.so"
-./endpoint.sh foo example.com
+./endpoint.sh foo local
 ```
 
 1. Input your YubiKey PIV PIN when prompted. Touch the YubiKey when it starts flashing.
-2. Provide `example.com/foo/crt.pem` and `example.com/foo/key.pem` to your endpoint.
-3. Delete `example.com/foo/key.pem`.
+2. Provide `local/foo/crt.pem` and `local/foo/key.pem` to your endpoint.
+3. Delete `local/foo/key.pem`.
 
-This creates a certificate for `foo.example.com` with a lifetime of 820 days in `example.com/foo`.
+This creates a certificate for `foo.local` with a lifetime of 820 days in `local/foo`.
+
+### Subdomain Certificates
+
+To generate a public/private key pair for a subdodomain, e.g. `bar.foo.local`, you can run `./endpoint.sh bar foo.local`.
